@@ -1,0 +1,4 @@
+source :rubygems
+
+gem 'language_detector', :git => 'https://github.com/moeffju/language_detector.git'
+

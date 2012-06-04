@@ -1,0 +1,15 @@
+GIT
+  remote: https://github.com/moeffju/language_detector.git
+  revision: 721b5137dbcd63e0e5bdd99a25ead02e7ffc674c
+  specs:
+    language_detector (0.1.5)
+
+GEM
+  remote: http://rubygems.org/
+  specs:
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  language_detector!
