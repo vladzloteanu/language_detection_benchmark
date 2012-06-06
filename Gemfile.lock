@@ -1,0 +1,29 @@
+GIT
+  remote: https://github.com/moeffju/language_detector.git
+  revision: 721b5137dbcd63e0e5bdd99a25ead02e7ffc674c
+  specs:
+    language_detector (0.1.5)
+
+GEM
+  remote: http://rubygems.org/
+  specs:
+    active_support (3.0.0)
+      activesupport (= 3.0.0)
+    activesupport (3.0.0)
+    coderay (1.0.6)
+    i18n (0.6.0)
+    method_source (0.7.1)
+    pry (0.9.9.6)
+      coderay (~> 1.0.5)
+      method_source (~> 0.7.1)
+      slop (>= 2.4.4, < 3)
+    slop (2.4.4)
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  active_support
+  i18n
+  language_detector!
+  pry
