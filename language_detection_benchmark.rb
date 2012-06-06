@@ -1,8 +1,11 @@
+#!/usr/bin/ruby
+
 require 'pry'
 require 'active_support'
 require 'active_support/core_ext/string'
 
 require 'language_detector'
+require 'whatlanguage'
 
 module LanguageDetectionBenchmark
 
@@ -31,6 +34,15 @@ module LanguageDetectionBenchmark
 
   class Bench
 
+    CORRESPONDANCES = {
+        'english' => 'en',
+        'scots' => 'en',
+        'dutch' => 'du',
+        'german' => 'de',
+        'french' => 'fr',
+        'romanian' => 'ro'
+    }
+
     delegate :texts_corpus, :to => 'texts_loader'
 
     def detect_language(text)
@@ -39,24 +51,42 @@ module LanguageDetectionBenchmark
 
     def benchs
       #%w( google_translate_api language_detector language_detector_tc )
-      %w( language_detector language_detector_tc )
+      %w( language_detector language_detector_tc whatlanguage )
     end
 
-    def bench_classes
-      benchs.map{|bench| "LanguageDetectionBenchmark::#{bench.camelize}Bench".constantize }
+    def detector_for(bench)
+      "LanguageDetectionBenchmark::#{bench.camelize}Bench".constantize.new
     end
 
     def benchmark!
-      bench_classes.each do |klass|
-        @detector = klass.new
+      reset_results!
+
+      benchs.each do |bench|
+        @detector = detector_for(bench)
         each_text do |text, language, origin|
           detected_language = @detector.detect_language text
-          puts "#{language}, #{detected_language}"
+          ack_result!(text, language, origin, detected_language.to_s, bench)
         end
       end
+
+      puts @results.inspect
     end
 
     private
+    def reset_results!
+      @results = {}
+    end
+
+    def ack_result!(text, language, origin, detected_language, detector_name)
+      puts "#{language}, #{detected_language}"
+      @results["#{detector_name}-#{origin}"] ||= {}
+      @results["#{detector_name}-#{origin}"][language] ||= {}
+      @results["#{detector_name}-#{origin}"][language]['correct'] ||= 0
+      @results["#{detector_name}-#{origin}"][language]['correct'] += 1 if(language == detected_language)
+      @results["#{detector_name}-#{origin}"][language]['total'] ||= 0
+      @results["#{detector_name}-#{origin}"][language]['total'] += 1
+    end
+
     def texts_loader
       @texts_loader ||= TextsLoader.new
     end
@@ -71,6 +101,10 @@ module LanguageDetectionBenchmark
       end
     end
 
+    def canonical_language(language)
+      CORRESPONDANCES[language.to_s] || language
+    end
+
   end
 
   class GoogleTranslateApiBench < Bench
@@ -83,14 +117,6 @@ module LanguageDetectionBenchmark
 
   class LanguageDetectorBench < Bench
 
-    CORRESPONDANCES = {
-        'english' => 'en',
-        'dutch' => 'du',
-        'german' => 'de',
-        'french' => 'fr',
-        'romanian' => 'ro'
-    }
-
     def detect_language(text)
       language = detector.detect(text)
       canonical_language(language)
@@ -101,16 +127,20 @@ module LanguageDetectionBenchmark
       @detector ||= LanguageDetector.new
     end
 
-    def canonical_language(language)
-      CORRESPONDANCES[language.to_s] || language
-    end
-
   end
 
   class LanguageDetectorTcBench < LanguageDetectorBench
 
     def detector
       @detector ||= LanguageDetector.new('tc')
+    end
+
+  end
+
+  class WhatlanguageBench < LanguageDetectorBench
+
+    def detect_language(text)
+      canonical_language text.language
     end
 
   end
