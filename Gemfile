@@ -5,6 +5,7 @@ gem 'language_detector', :git => "https://github.com/moeffju/language_detector.g
 gem 'peterc-whatlanguage'
 #gem 'google-api-client'
 gem 'easy_translate'
+gem 'alchemy_api'
 
 gem 'active_support'
 gem 'i18n'

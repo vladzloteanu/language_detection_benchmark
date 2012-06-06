@@ -7,6 +7,7 @@ require 'active_support/core_ext/string'
 require 'language_detector'
 require 'whatlanguage'
 require 'easy_translate'
+require 'alchemy_api'
 
 module LanguageDetectionBenchmark
 
@@ -50,9 +51,9 @@ module LanguageDetectionBenchmark
       raise "Not implemented!"
     end
 
+    # Declarative is sexier than inherited hook :)
     def benchs
-      #%w( google_translate_api language_detector language_detector_tc )
-      %w( google_api language_detector language_detector_tc whatlanguage )
+      %w( alchemy_api google_api language_detector language_detector_tc whatlanguage )
     end
 
     def detector_for(bench)
@@ -71,6 +72,7 @@ module LanguageDetectionBenchmark
       end
 
       puts @results.inspect
+      print_results!
     end
 
     private
@@ -104,6 +106,20 @@ module LanguageDetectionBenchmark
 
     def canonical_language(language)
       CORRESPONDANCES[language.to_s] || language
+    end
+
+    def print_results!
+      langs = %w( en fr de nl ro )
+      puts "test_name, " + langs.join(", ")
+      @results.keys.sort.each do |test|
+        rows = [ test ]
+        langs.each do |lang|
+          stat = @results[test][lang]
+          percentage = (stat['correct'] * 1.0 / stat['total']) * 100
+          rows << percentage
+        end
+        puts rows.join ", "
+      end
     end
 
   end
@@ -173,6 +189,24 @@ module LanguageDetectionBenchmark
 
     def api_key
       Config['google']['api_key']
+    end
+
+  end
+
+  class AlchemyApiBench < Bench
+
+    def detect_language(text)
+      init
+      AlchemyApi::LanguageDetection.get_language_from_text(text)['iso_639_1'] rescue "error"
+    end
+
+    private
+    def init
+      AlchemyApi.api_key = api_key if AlchemyApi.api_key.nil?
+    end
+
+    def api_key
+      Config['alchemy_api']['api_key']
     end
 
   end

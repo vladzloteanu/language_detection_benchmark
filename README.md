@@ -1,3 +1,11 @@
+# Results
+    test_name                         , en   , fr   , de   , nl   , ro
+    alchemy_api-twitter_tests         , 100.0, 95.0 , 100.0, 85.0 , 85.0
+    google_api-twitter_tests          , 100.0, 100.0, 100.0, 100.0, 95.0
+    language_detector-twitter_tests   , 65.0 , 80.0 , 100.0, 95.0 , 55.0
+    language_detector_tc-twitter_tests, 85.0 , 100.0, 85.0 , 95.0 , 65.0
+    whatlanguage-twitter_tests        , 95.0 , 90.0 , 90.0 , 90.0 , 0.0
+
 # Needs estimation
 
 * __Content/day__:
