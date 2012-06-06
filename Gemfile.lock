@@ -12,7 +12,10 @@ GEM
       activesupport (= 3.0.0)
     activesupport (3.0.0)
     coderay (1.0.6)
+    easy_translate (0.3.1)
+      json
     i18n (0.6.0)
+    json (1.7.3)
     method_source (0.7.1)
     peterc-whatlanguage (1.0.3)
     pry (0.9.9.6)
@@ -26,6 +29,7 @@ PLATFORMS
 
 DEPENDENCIES
   active_support
+  easy_translate
   i18n
   language_detector!
   peterc-whatlanguage

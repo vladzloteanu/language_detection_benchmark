@@ -6,6 +6,7 @@ require 'active_support/core_ext/string'
 
 require 'language_detector'
 require 'whatlanguage'
+require 'easy_translate'
 
 module LanguageDetectionBenchmark
 
@@ -37,7 +38,7 @@ module LanguageDetectionBenchmark
     CORRESPONDANCES = {
         'english' => 'en',
         'scots' => 'en',
-        'dutch' => 'du',
+        'dutch' => 'nl',
         'german' => 'de',
         'french' => 'fr',
         'romanian' => 'ro'
@@ -51,7 +52,7 @@ module LanguageDetectionBenchmark
 
     def benchs
       #%w( google_translate_api language_detector language_detector_tc )
-      %w( language_detector language_detector_tc whatlanguage )
+      %w( google_api language_detector language_detector_tc whatlanguage )
     end
 
     def detector_for(bench)
@@ -141,6 +142,51 @@ module LanguageDetectionBenchmark
 
     def detect_language(text)
       canonical_language text.language
+    end
+
+  end
+
+  class GoogleApiBench < Bench
+
+    def detect_language(text)
+      canonical_language text.language
+
+      #result = client.execute(
+      #  :api_method => translate.detections.list,
+      #  :parameters => {
+      #    'key' => api_key,
+      #    'q' => 'buna ziua!'
+      #      }
+      #)
+
+      ::EasyTranslate.detect text, :key => api_key
+    end
+
+    private
+    #def client
+    #  @client ||= Google::APIClient.new(:key => api_key)
+    #end
+    #
+    #def translate
+    #  client.discovered_api('translate', 'v2')
+    #end
+
+    def api_key
+      Config['google']['api_key']
+    end
+
+  end
+
+  module Config
+
+    class << self
+
+      delegate :[], :to => 'config_hash'
+
+      def config_hash
+        @config_hash ||= YAML.load(File.open('config.yml')).freeze
+      end
+
     end
 
   end
